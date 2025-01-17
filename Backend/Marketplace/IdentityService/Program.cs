@@ -2,6 +2,7 @@ using IdentityService.Data;
 using IdentityService.Extensions;
 using IdentityService.Models.Identity;
 using IdentityService.Services;
+using Marketplace.Shared.Config.Middleware;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -16,6 +17,8 @@ namespace IdentityService
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+            builder.Configuration.AddJsonFile("jwt.json");
+
             builder.Services.Configure<ApiBehaviorOptions>(options =>
             {
                 options.SuppressModelStateInvalidFilter = true;

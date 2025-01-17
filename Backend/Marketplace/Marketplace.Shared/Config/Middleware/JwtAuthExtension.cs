@@ -1,13 +1,17 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using System.Runtime.CompilerServices;
 using System.Text;
+using Microsoft.Extensions.Configuration.Json;
+using System.Reflection;
 
-namespace IdentityService.Extensions
+namespace Marketplace.Shared.Config.Middleware
 {
     public static class JwTAuthExtension
     {
-        public static void AddJwt(this IServiceCollection services, IConfiguration configuration)
+        public static void AddJwt(this IServiceCollection services, ConfigurationManager configuration)
         {
             services.AddAuthentication(options =>
             {
@@ -22,7 +26,6 @@ namespace IdentityService.Extensions
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
                     ValidIssuer = configuration["Jwt:Issuer"] ?? throw new NullReferenceException(),
-                    ValidAudience = configuration["Jwt:Audience"] ?? throw new NullReferenceException(),
 
                     IssuerSigningKey = new SymmetricSecurityKey(
                         Encoding.UTF8.GetBytes(
