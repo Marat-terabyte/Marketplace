@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
 
-namespace IdentityService.Services
+namespace Marketplace.Shared.Formatters
 {
     public class ErrorFormater
     {

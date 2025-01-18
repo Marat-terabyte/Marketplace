@@ -1,6 +1,7 @@
 ﻿using IdentityService.Models.Identity;
 using IdentityService.Models.InputModels;
 using IdentityService.Services;
+using Marketplace.Shared.Formatters;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
