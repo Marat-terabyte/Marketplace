@@ -19,17 +19,32 @@ namespace Marketplace.Shared.Config.Middleware
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
             }).AddJwtBearer(options =>
             {
+                options.Events = new JwtBearerEvents
+                {
+                    OnAuthenticationFailed = context =>
+                    {
+                        Console.WriteLine($"Authentication failed: {context.Exception.Message}");
+                        return Task.CompletedTask;
+                    },
+                    OnChallenge = context =>
+                    {
+                        Console.WriteLine($"Authentication challenge: {context.Error}");
+                        return Task.CompletedTask;
+                    }
+                };
+
+                options.Authority = "https://identityservice";
+                options.RequireHttpsMetadata = false;
                 options.TokenValidationParameters = new()
                 {
-                    ValidateIssuer = true,
-                    ValidateAudience = true,
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
                     ValidIssuer = configuration["Jwt:Issuer"] ?? throw new NullReferenceException(),
 
                     IssuerSigningKey = new SymmetricSecurityKey(
-                        Encoding.UTF8.GetBytes(
-                            configuration["Jwt:Key"] ?? throw new NullReferenceException()
+                        Encoding.UTF8.GetBytes(configuration["Jwt:Key"] ?? throw new NullReferenceException()
                         )
                     )
                 };
