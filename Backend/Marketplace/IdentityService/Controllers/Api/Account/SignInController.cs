@@ -43,6 +43,7 @@ namespace IdentityService.Controllers.Api.Account
                 new
                 {
                     token = token,
+                    role = roles,
                     expiration = DateTime.Now.AddHours(5)
                 }
             );
