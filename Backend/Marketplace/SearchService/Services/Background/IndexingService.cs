@@ -4,28 +4,34 @@ using RabbitMQ.Client.Events;
 using SearchService.Models.Search;
 using System.Text;
 using System.Text.Json;
+using Marketplace.Shared.Services;
 
 namespace SearchService.Services.Background
 {
     public class IndexingService : IHostedService
     {
-        private IChannel _channel;
         private ISearchRepository _searchRepository;
+        private IMsgBroker _msgBroker;
 
-        public IndexingService(IChannel channel, ISearchRepository searchRepository)
+        public IndexingService(ISearchRepository searchRepository, IMsgBroker broker)
         {
-            _channel = channel;
             _searchRepository = searchRepository;
+            _msgBroker = broker;
         }
 
-        public async Task Consume(object ch, BasicDeliverEventArgs events)
+        public async Task StartAsync(CancellationToken cancellationToken)
         {
-            string json =  Encoding.UTF8.GetString(events.Body.ToArray());
-            var request = JsonSerializer.Deserialize<SearchServiceRequest>(json);
+            await _msgBroker.ReceiveMessageAsync(Consume, "search_indexing_queue", false);
+        }
+
+        private async Task Consume(object ch, BasicDeliverEventArgs events)
+        {
+            string json = Encoding.UTF8.GetString(events.Body.ToArray());
+            var request = JsonSerializer.Deserialize<SearchIndexRequest>(json);
             if (request == null)
                 return;
 
-            if (request.Method == TypeMethod.Add)
+            if (request.Type == RequestType.Index)
             {
                 SearchedProduct product = new SearchedProduct()
                 {
@@ -36,11 +42,11 @@ namespace SearchService.Services.Background
 
                 await _searchRepository.AddProductAsync(product);
             }
-            else if (request.Method == TypeMethod.Delete)
+            else if (request.Type == RequestType.Deindex)
             {
-                 await _searchRepository.DeleteProductAsync(request.Id);
+                await _searchRepository.DeleteProductAsync(request.Id);
             }
-            else if (request.Method == TypeMethod.Update)
+            else if (request.Type == RequestType.Update)
             {
                 SearchedProduct product = new SearchedProduct()
                 {
@@ -51,14 +57,6 @@ namespace SearchService.Services.Background
 
                 await _searchRepository.UpdateProductAsync(request.Id, product);
             }
-        }
-
-        public Task StartAsync(CancellationToken cancellationToken)
-        {
-            var consumer = new AsyncEventingBasicConsumer(_channel);
-            consumer.ReceivedAsync += Consume;
-
-            return Task.CompletedTask;
         }
 
         public Task StopAsync(CancellationToken cancellationToken)

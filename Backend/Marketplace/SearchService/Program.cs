@@ -1,9 +1,8 @@
-using Elastic.Clients.Elasticsearch;
-using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Mvc;
+using Marketplace.Shared.Config.Middleware;
 using SearchService.Extenstions;
 using SearchService.Models.Search;
 using SearchService.Services;
+using SearchService.Services.Background;
 using SearchService.Services.ElasticSearch;
 using SearchService.Services.ElasticSearch.MapCreators;
 
@@ -20,8 +19,12 @@ namespace SearchService
 
             builder.Services.AddElasticSearch(builder.Configuration);
             builder.Services.AddScoped<ElasticSearchService>();
-            builder.Services.AddScoped<ISearchRepository, ElasticSearchRepository>();
+            builder.Services.AddSingleton<ISearchRepository, ElasticSearchRepository>();
             builder.Services.AddScoped<FindService>();
+            
+            await builder.Services.AddRabbitMQ(builder.Configuration);
+            builder.Services.AddHostedService<IndexingService>();
+
 
             var app = builder.Build();
             { 
@@ -31,7 +34,7 @@ namespace SearchService
                 
                 await elasticService.CreateIndicesWithMappings();
             }
-            
+
             if (app.Environment.IsDevelopment())
                 app.UseDeveloperExceptionPage();
 
