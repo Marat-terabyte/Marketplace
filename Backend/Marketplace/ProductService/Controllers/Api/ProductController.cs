@@ -1,10 +1,13 @@
 ﻿using Marketplace.Shared.Formatters;
+using Marketplace.Shared.Models;
+using Marketplace.Shared.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ProductService.Models.InputModels;
 using ProductService.Models.Products;
 using ProductService.Services;
 using System.Security.Claims;
+using System.Text.Json;
 
 namespace ProductService.Controllers.Api
 {
@@ -71,7 +74,7 @@ namespace ProductService.Controllers.Api
             };
 
             await _productService.AddItemAsync(product);
-
+            
             return Ok(new { Id = product.Id.ToString() });
         }
 
@@ -104,7 +107,7 @@ namespace ProductService.Controllers.Api
             product.UpdatedAt = DateTime.Now;
 
             await _productService.UpdateAsync(product);
-            
+         
             return Ok(new { Id = product.Id });
         }
 

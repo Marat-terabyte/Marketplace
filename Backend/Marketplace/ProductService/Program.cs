@@ -8,7 +8,7 @@ namespace ProductService
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
             
@@ -29,6 +29,8 @@ namespace ProductService
 
             builder.Configuration.AddJsonFile("jwt.json");
             builder.Services.AddJwt(builder.Configuration);
+
+            await builder.Services.AddRabbitMQ(builder.Configuration);
 
             var app = builder.Build();
             

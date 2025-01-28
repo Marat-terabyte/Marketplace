@@ -3,6 +3,10 @@ using MongoDB.Bson;
 using ProductService.Models.Products;
 using ProductService.Models.Products.Repositories;
 using System.Text.Json;
+using RabbitMQ.Client;
+using Marketplace.Shared.Models;
+using System.Text;
+using Marketplace.Shared.Services;
 
 namespace ProductService.Services
 {
@@ -10,16 +14,36 @@ namespace ProductService.Services
     {
         private readonly IProductRepository _repository;
         private readonly IDistributedCache _cache;
+        private readonly IMsgBroker _msgBroker;
 
-        public ItemService(IDistributedCache cache, IProductRepository repository)
+        public ItemService(IDistributedCache cache, IProductRepository repository, IMsgBroker broker)
         {
             _cache = cache;
             _repository = repository;
+            _msgBroker = broker;
         }
 
         public async Task AddItemAsync(Product product)
         {
             await _repository.AddAsync(product);
+            await IndexProduct(product);
+        }
+
+        /// <summary>
+        /// Publishes a product to a message broker for deindexing in the search service
+        /// </summary>
+        private async Task IndexProduct(Product product)
+        {
+            SearchIndexRequest request = new SearchIndexRequest()
+            {
+                Id = product.Id.ToString(),
+                Name = product.Name,
+                Description = product.Description,
+                Type = RequestType.Index
+            };
+
+            // TODO:
+            await _msgBroker.SendMessageAsync(exchange: "", routingKey: "search_indexing_queue", JsonSerializer.Serialize(request));
         }
 
         public async Task<Product?> GetByIdAsync(string id)
@@ -53,12 +77,43 @@ namespace ProductService.Services
         {
             await _repository.UpdateAsync(updatedProduct);
             await SetProductToCacheAsync(updatedProduct, expirationHours: 1);
+            await UpdateIndexProduct(updatedProduct);
+        }
+
+        private async Task UpdateIndexProduct(Product updatedProduct)
+        {
+            SearchIndexRequest request = new SearchIndexRequest()
+            {
+                Id = updatedProduct.Id.ToString(),
+                Name = updatedProduct.Name,
+                Description = updatedProduct.Description,
+                Type = RequestType.Update
+            };
+
+            // TODO:
+            await _msgBroker.SendMessageAsync(exchange: "", routingKey: "search_indexing_queue", JsonSerializer.Serialize(request));
         }
 
         public async Task DeleteAsync(string id)
         {
             await _repository.DeleteAsync(id);
             await _cache.RemoveAsync(id);
+            await DeindexProduct(id);
+        }
+
+        /// <summary>
+        /// Publishes a product to a message broker for deindexing in the search service
+        /// </summary>
+        private async Task DeindexProduct(string id)
+        {
+            SearchIndexRequest request = new SearchIndexRequest()
+            {
+                Id = id,
+                Type = RequestType.Deindex
+            };
+
+            // TODO:
+            await _msgBroker.SendMessageAsync(exchange: "", routingKey: "search_indexing_queue", JsonSerializer.Serialize(request));
         }
 
         private async Task SetProductToCacheAsync(Product product, int expirationHours)

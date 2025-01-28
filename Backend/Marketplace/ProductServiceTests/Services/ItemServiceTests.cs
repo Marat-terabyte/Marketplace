@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Caching.Distributed;
+﻿using Marketplace.Shared.Services;
+using Microsoft.Extensions.Caching.Distributed;
 using MongoDB.Bson;
 using Moq;
 using ProductService.Models.Products;
@@ -11,13 +12,15 @@ namespace ProductServiceTests.Services
     {
         private readonly Mock<IProductRepository> _mockRepository;
         private readonly Mock<IDistributedCache> _mockCache;
+        private readonly Mock<IMsgBroker> _mockBroker;
         private readonly ItemService _itemService;
 
         public ItemServiceTests()
         {
             _mockRepository = new Mock<IProductRepository>();
             _mockCache = new Mock<IDistributedCache>();
-            _itemService = new ItemService(_mockCache.Object, _mockRepository.Object);
+            _mockBroker = new Mock<IMsgBroker>();
+            _itemService = new ItemService(_mockCache.Object, _mockRepository.Object, _mockBroker.Object);
         }
 
         [Fact]
@@ -41,6 +44,7 @@ namespace ProductServiceTests.Services
 
             // Assert
             _mockRepository.Verify(r => r.AddAsync(product), Times.Once());
+            _mockBroker.Verify(b => b.SendMessageAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()));
         }
 
         [Fact]
@@ -116,6 +120,7 @@ namespace ProductServiceTests.Services
 
             // Assert
             _mockRepository.Verify(repo => repo.UpdateAsync(updatedProduct), Times.Once);
+            _mockBroker.Verify(b => b.SendMessageAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()));
         }
 
         [Fact]
@@ -131,6 +136,7 @@ namespace ProductServiceTests.Services
             // Assert
             _mockRepository.Verify(repo => repo.DeleteAsync(id), Times.Once);
             _mockCache.Verify(cache => cache.RemoveAsync(id, CancellationToken.None), Times.Once);
+            _mockBroker.Verify(b => b.SendMessageAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()));
         }
     }
 }
