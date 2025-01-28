@@ -1,4 +1,5 @@
 ﻿using Marketplace.Shared.Models;
+using Marketplace.Shared.Services;
 using Moq;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
@@ -11,27 +12,27 @@ namespace SearchServiceTests.Services.Background
 {
     public class IndexingServiceTests
     {
-        private Mock<IChannel> _channel;
-        private Mock<ISearchRepository> _searchRepository;
-        private IndexingService _indexingService;
+        private readonly Mock<ISearchRepository> _searchRepository;
+        private readonly Mock<IMsgBroker> _mockBroker;
+        private readonly IndexingService _indexingService;
 
         public IndexingServiceTests()
         {
-            _channel = new Mock<IChannel>();
             _searchRepository = new Mock<ISearchRepository>();
-            _indexingService = new IndexingService(_channel.Object, _searchRepository.Object);
+            _mockBroker = new Mock<IMsgBroker>();
+            _indexingService = new IndexingService(_searchRepository.Object, _mockBroker.Object);
         }
 
         [Fact]
         public async Task Consume_AddProduct_ShouldCallAddProduct()
         {
             // Arrange
-            var request = new SearchServiceRequest()
+            var request = new SearchIndexRequest()
             {
                 Id = "1",
                 Name = "Product 1",
                 Description = "Description of product 1",
-                Method = TypeMethod.Add
+                Type = RequestType.Index
             };
 
             var encodedJson = Encoding.UTF8.GetBytes(
@@ -41,7 +42,6 @@ namespace SearchServiceTests.Services.Background
             var args = new BasicDeliverEventArgs("", 0, false, "", "", null, encodedJson);
 
             // Act
-
             await _indexingService.Consume(null, args);
 
             // Assert
@@ -52,12 +52,12 @@ namespace SearchServiceTests.Services.Background
         public async Task Consume_UpdateProduct_ShouldCallUpdateProduct()
         {
             // Arrange
-            var request = new SearchServiceRequest()
+            var request = new SearchIndexRequest()
             {
                 Id = "1",
                 Name = "Product 1",
                 Description = "Description of product 1",
-                Method = TypeMethod.Update
+                Type = RequestType.Update
             };
 
             var encodedJson = Encoding.UTF8.GetBytes(
@@ -67,7 +67,6 @@ namespace SearchServiceTests.Services.Background
             var args = new BasicDeliverEventArgs("", 0, false, "", "", null, encodedJson);
 
             // Act
-
             await _indexingService.Consume(null, args);
 
             // Assert
@@ -78,12 +77,12 @@ namespace SearchServiceTests.Services.Background
         public async Task Consume_DeleteProduct_ShouldCallDeleteProduct()
         {
             // Arrange
-            var request = new SearchServiceRequest()
+            var request = new SearchIndexRequest()
             {
                 Id = "1",
                 Name = "Product 1",
                 Description = "Description of product 1",
-                Method = TypeMethod.Delete
+                Type = RequestType.Deindex
             };
 
             var encodedJson = Encoding.UTF8.GetBytes(
@@ -93,7 +92,6 @@ namespace SearchServiceTests.Services.Background
             var args = new BasicDeliverEventArgs("", 0, false, "", "", null, encodedJson);
 
             // Act
-
             await _indexingService.Consume(null, args);
 
             // Assert

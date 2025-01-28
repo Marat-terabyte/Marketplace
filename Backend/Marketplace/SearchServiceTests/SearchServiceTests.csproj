@@ -16,6 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Marketplace.Shared\Marketplace.Shared.csproj" />
     <ProjectReference Include="..\SearchService\SearchService.csproj" />
   </ItemGroup>
 

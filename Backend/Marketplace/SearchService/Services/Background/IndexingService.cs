@@ -24,7 +24,7 @@ namespace SearchService.Services.Background
             await _msgBroker.ReceiveMessageAsync(Consume, "search_indexing_queue", false);
         }
 
-        private async Task Consume(object ch, BasicDeliverEventArgs events)
+        public async Task Consume(object ch, BasicDeliverEventArgs events)
         {
             string json = Encoding.UTF8.GetString(events.Body.ToArray());
             var request = JsonSerializer.Deserialize<SearchIndexRequest>(json);
