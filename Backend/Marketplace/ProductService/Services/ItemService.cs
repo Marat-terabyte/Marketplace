@@ -42,7 +42,6 @@ namespace ProductService.Services
                 Type = RequestType.Index
             };
 
-            // TODO:
             await _msgBroker.SendMessageAsync(exchange: "", routingKey: "search_indexing_queue", JsonSerializer.Serialize(request));
         }
 
@@ -90,7 +89,6 @@ namespace ProductService.Services
                 Type = RequestType.Update
             };
 
-            // TODO:
             await _msgBroker.SendMessageAsync(exchange: "", routingKey: "search_indexing_queue", JsonSerializer.Serialize(request));
         }
 
@@ -112,7 +110,6 @@ namespace ProductService.Services
                 Type = RequestType.Deindex
             };
 
-            // TODO:
             await _msgBroker.SendMessageAsync(exchange: "", routingKey: "search_indexing_queue", JsonSerializer.Serialize(request));
         }
 
