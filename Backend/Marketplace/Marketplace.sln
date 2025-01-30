@@ -21,6 +21,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SearchServiceTests", "Searc
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrderService", "OrderService\OrderService.csproj", "{15E63E6E-CE62-4F13-82A0-9F3CA21D7FF2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PaymentService", "PaymentService\PaymentService.csproj", "{4AAE7C06-FF27-4F52-AAB7-33339E0F24C2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -55,6 +57,10 @@ Global
 		{15E63E6E-CE62-4F13-82A0-9F3CA21D7FF2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{15E63E6E-CE62-4F13-82A0-9F3CA21D7FF2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{15E63E6E-CE62-4F13-82A0-9F3CA21D7FF2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4AAE7C06-FF27-4F52-AAB7-33339E0F24C2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4AAE7C06-FF27-4F52-AAB7-33339E0F24C2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4AAE7C06-FF27-4F52-AAB7-33339E0F24C2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4AAE7C06-FF27-4F52-AAB7-33339E0F24C2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -66,6 +72,7 @@ Global
 		{A3261A87-E7DC-4272-86CD-21AFF4C767C2} = {99A29CE1-DF3A-49BD-A294-910B1947BF09}
 		{A5E11DD8-F523-433D-A3CE-890B94DA5784} = {CF092012-8C85-455D-B480-CE8EDAC1557A}
 		{15E63E6E-CE62-4F13-82A0-9F3CA21D7FF2} = {99A29CE1-DF3A-49BD-A294-910B1947BF09}
+		{4AAE7C06-FF27-4F52-AAB7-33339E0F24C2} = {99A29CE1-DF3A-49BD-A294-910B1947BF09}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {980BF1E4-B7A0-4256-8B02-DE7A83911B7E}
