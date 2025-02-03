@@ -26,7 +26,6 @@ namespace ProductService.Models.Products.Repositories
 
         public async Task<Product?> GetAsync(string id)
         {
-            Console.WriteLine(ObjectId.Parse(id));
             return await _collection.Find(p => p.Id == ObjectId.Parse(id)).FirstOrDefaultAsync();
         }
 

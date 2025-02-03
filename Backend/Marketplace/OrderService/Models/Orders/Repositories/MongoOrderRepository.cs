@@ -12,6 +12,11 @@ namespace OrderService.Models.Orders.Repositories
             _collection = collection;
         }
 
+        public async Task CreateOrderAsync(Order order)
+        {
+            await _collection.InsertOneAsync(order);
+        }
+
         public async Task<Order?> GetOrderAsync(string id)
         {
             return await _collection.Find(o => o.Id == ObjectId.Parse(id)).FirstOrDefaultAsync();

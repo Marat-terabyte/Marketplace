@@ -2,17 +2,16 @@ using OrderService.Extensions;
 using Marketplace.Shared.Config.Middleware;
 using ProductService.JsonConverters;
 using OrderService.Services;
+using OrderService.Services.BackgroundServices;
 
 namespace OrderService
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
             builder.Services.AddControllers();
-
-            Console.WriteLine(DateTime.Now);
 
             builder.Services.AddControllers().AddNewtonsoftJson(options =>
             {
@@ -25,6 +24,10 @@ namespace OrderService
             builder.Services.AddMongoDb(builder.Configuration);
             builder.Services.AddMongoRepositories();
             builder.Services.AddScoped<OrderManager>();
+
+            await builder.Services.AddRabbitMQ(builder.Configuration);
+
+            builder.Services.AddHostedService<CreationOrderService>();
 
             var app = builder.Build();
 

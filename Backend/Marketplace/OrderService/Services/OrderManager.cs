@@ -12,6 +12,11 @@ namespace OrderService.Services
             _repository = repository;
         }
 
+        public async Task AddOrderAsync(Order order)
+        {
+            await _repository.CreateOrderAsync(order);
+        }
+
         public async Task<Order?> GetOrderAsync(string id)
         {
             return await _repository.GetOrderAsync(id);

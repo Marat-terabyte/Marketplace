@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Marketplace.Shared.Models;
+using Microsoft.EntityFrameworkCore;
 using PaymentService.Data;
 using PaymentService.Exceptions;
 
@@ -51,6 +52,113 @@ namespace PaymentService.Models.Repositories
             await _context.SaveChangesAsync();
 
             return balance;
+        }
+
+        public async Task<(bool, string?)> ProcessPaymentAsync(BuyTransactionModel buyTransaction)
+        {
+            string? errorMessage = null;
+
+            var transaction = await _context.Database.BeginTransactionAsync();
+            try
+            {
+                var res = await ProcessAsync(buyTransaction);
+
+                errorMessage = res.Item2;
+                bool isSuccess = res.Item1;
+                if (!isSuccess)
+                    return (false, errorMessage);
+
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
+            }
+            catch
+            {
+                if (errorMessage != null)
+                    errorMessage = "ServerSideError";
+
+                return (false, errorMessage);
+            }
+
+            return (true, null);
+        }
+
+        private async Task<(bool, string?)> ProcessAsync(BuyTransactionModel transactionModel)
+        {
+            Dictionary<string, Balance> sellerBalances = new Dictionary<string, Balance>();
+            
+            Balance? userBalance = await GetBalanceByUserIdAsync(transactionModel.ConsumerIds[0]);
+            if (userBalance == null)
+                return (false, "NotEnoughMoney");
+            
+            for (int i = 0; i < transactionModel.ProductIds.Count; i++)
+            {
+                Balance? sellerBalance = null;
+
+                string sellerId = transactionModel.SellerIds[i];
+                decimal price = transactionModel.Prices[i];
+                int count = transactionModel.Counts[i];
+
+                sellerBalance = await GetSellerBalanceAsync(sellerBalances, sellerId);
+
+                if (userBalance.Account < price * count)
+                    return (false, "NotEnoughMoney");
+
+                userBalance.Account -= price * count;
+                sellerBalance.Account += price * count;
+            }
+
+            return (true, null);
+        }
+
+        public async Task<bool> RestorePaymentProcessAsync(BuyTransactionModel transactionModel)
+        {
+            try
+            {
+                var transaction = await _context.Database.BeginTransactionAsync();
+                await RestoreProcessAsync(transactionModel);
+
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
+            }
+            catch
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        private async Task RestoreProcessAsync(BuyTransactionModel transactionModel)
+        {
+            Dictionary<string, Balance> sellerBalances = new Dictionary<string, Balance>();
+
+            Balance userBalance = (await GetBalanceByUserIdAsync(transactionModel.ConsumerIds[0]))!;
+            for (int i = 0; i < transactionModel.ProductIds.Count; i++)
+            {
+                decimal price = transactionModel.Prices[i];
+                string sellerId = transactionModel.SellerIds[i];
+                int count = transactionModel.Counts[i];
+
+                Balance sellerBalance = await GetSellerBalanceAsync(sellerBalances, sellerId);
+                
+                userBalance.Account += price * count;
+                sellerBalance.Account -= price * count;
+            }
+        }
+
+        private async Task<Balance> GetSellerBalanceAsync(Dictionary<string, Balance> sellerBalances, string sellerId)
+        {
+            Balance? sellerBalance;
+            if (!(sellerBalances.TryGetValue(sellerId, out sellerBalance)))
+            {
+                sellerBalance = await GetBalanceByUserIdAsync(sellerId);
+                if (sellerBalance == null)
+                    sellerBalance = await CreateBalanceAsync(sellerId);
+
+                sellerBalances.Add(sellerId, sellerBalance);
+            }
+
+            return sellerBalance;
         }
     }
 }

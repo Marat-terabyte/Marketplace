@@ -25,8 +25,4 @@
     <ProjectReference Include="..\Marketplace.Shared\Marketplace.Shared.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Services\BackgroundServices\" />
-  </ItemGroup>
-
 </Project>

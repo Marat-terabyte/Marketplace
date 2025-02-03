@@ -6,7 +6,7 @@ namespace CartService
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
             builder.Configuration.AddJsonFile("jwt.json");
@@ -17,7 +17,8 @@ namespace CartService
             builder.Services.AddScoped<HttpClient>();
 
             builder.Services.AddMongoDbServices(builder.Configuration);
-            
+            await builder.Services.AddRabbitMQ(builder.Configuration);
+
             builder.Services.AddControllers();
             builder.Services.AddControllers().AddNewtonsoftJson(options =>
             {

@@ -62,7 +62,7 @@ namespace CartService.Controllers.Api
 
             var res = await CheckProductAsync(productId, userId);
             if (res.Item1)
-                return Ok(res.ToString());
+                return Ok(res.Item2.ToString());
 
             Product? product = await GetDataFromProductService(productId);
             if (product == null)
@@ -70,6 +70,7 @@ namespace CartService.Controllers.Api
 
             var cartProduct = new CartProduct()
             {
+                SellerId = product.SellerId,
                 ConsumerId = userId,
                 Count = 1,
                 CreatedAt = DateTime.Now,

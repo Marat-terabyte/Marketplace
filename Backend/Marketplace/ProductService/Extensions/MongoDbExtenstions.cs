@@ -8,9 +8,11 @@ namespace ProductService.Extensions
     {
         public static void AddMongoDbServices(this IServiceCollection services, ConfigurationManager configuration)
         {
+            MongoClient client = new MongoClient(configuration.GetConnectionString("MongoDB"));
+            
+            services.AddSingleton<IMongoClient>(client);
             services.AddSingleton(_ =>
             {
-                MongoClient client = new MongoClient(configuration.GetConnectionString("MongoDB"));
                 IMongoDatabase database = client.GetDatabase(configuration["MongoDB:Database"]);
 
                 return database.GetCollection<Product>("products");

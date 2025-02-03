@@ -11,7 +11,7 @@ namespace CartService.Models
         [BsonRepresentation(BsonType.String)]
         public ObjectId Id { get; set; }
 
-        [JsonPropertyName("sellerid")]
+        [JsonPropertyName("sellerId")]
         public string SellerId { get; set; }
         
         [JsonPropertyName("name")]
@@ -23,10 +23,10 @@ namespace CartService.Models
         [JsonPropertyName("stock")]
         public int Stock { get; set; }
 
-        [JsonPropertyName("createdat")]
+        [JsonPropertyName("createdAt")]
         public DateTime CreatedAt { get; set; }
         
-        [JsonPropertyName("updatedat")]
+        [JsonPropertyName("updatedAt")]
         public DateTime? UpdatedAt {  get; set; }
     }
 }
