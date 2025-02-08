@@ -1,10 +1,8 @@
-using CartService.Extensions;
-using CartService.Services.BackgroundService;
 using Marketplace.Shared.Config.Middleware;
-using ProductService.JsonConverters;
-using RabbitMQ.Client;
+using NotifictationService.Services.BackgroundServices;
+using NotifictationService.Hubs;
 
-namespace CartService
+namespace NotifictationService
 {
     public class Program
     {
@@ -12,24 +10,19 @@ namespace CartService
         {
             var builder = WebApplication.CreateBuilder(args);
             builder.Configuration.AddJsonFile("jwt.json");
-            
-            builder.Services.AddJwt(builder.Configuration);
-            
-            builder.Services.AddSingleton(_ => new Config(builder.Configuration));
-            builder.Services.AddScoped<HttpClient>();
 
-            builder.Services.AddMongoDbServices(builder.Configuration);
+            builder.Services.AddSignalR();
+            
+            builder.Services.AddControllers();
+
+            builder.Services.AddJwt(builder.Configuration);
+
             await builder.Services.AddRabbitMQ(builder.Configuration);
 
-            builder.Services.AddControllers();
-            builder.Services.AddControllers().AddNewtonsoftJson(options =>
-            {
-                options.SerializerSettings.Converters.Add(new ObjectIdConverter());
-            });
-
-            builder.Services.AddHostedService<CartRecovery>();
+            builder.Services.AddHostedService<NotificationSender>();
 
             var app = builder.Build();
+
             if (app.Environment.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -45,6 +38,7 @@ namespace CartService
             app.UseAuthentication();
             app.UseAuthorization();
 
+            app.MapHub<NotificationHub>("/hub/notification");
             app.MapControllers();
 
             app.Run();

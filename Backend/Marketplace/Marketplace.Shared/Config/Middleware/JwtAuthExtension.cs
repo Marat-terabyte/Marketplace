@@ -30,7 +30,17 @@ namespace Marketplace.Shared.Config.Middleware
                     {
                         Console.WriteLine($"Authentication challenge: {context.Error}");
                         return Task.CompletedTask;
-                    }
+                    },
+                    OnMessageReceived = context =>
+                    {
+                        var accessToken = context.Request.Query["access_token"];
+                        var path = context.HttpContext.Request.Path;
+                        if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/hub"))
+                        {
+                            context.Token = accessToken;
+                        }
+                        return Task.CompletedTask;
+                    },
                 };
 
                 options.Authority = "https://identityservice";
@@ -46,7 +56,7 @@ namespace Marketplace.Shared.Config.Middleware
                     IssuerSigningKey = new SymmetricSecurityKey(
                         Encoding.UTF8.GetBytes(configuration["Jwt:Key"] ?? throw new NullReferenceException()
                         )
-                    )
+                    ),
                 };
             });
         }

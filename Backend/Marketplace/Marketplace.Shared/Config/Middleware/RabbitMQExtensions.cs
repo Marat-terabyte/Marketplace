@@ -17,8 +17,8 @@ namespace Marketplace.Shared.Config.Middleware
                 Password = config["RabbitMQ:Password"] ?? throw new ArgumentNullException("'RabbitMQ:Password' string is empty")
             }.CreateConnectionAsync();
 
-            // Creating queues
             // TODO: Replace 
+            // Creating queues
             IChannel channel = await amqpConnection.CreateChannelAsync();
             await channel.QueueDeclareAsync("search_indexing_queue", durable: false, exclusive: false, autoDelete: false, arguments: null);
             
@@ -30,6 +30,8 @@ namespace Marketplace.Shared.Config.Middleware
 
             await channel.QueueDeclareAsync("create_order_queue", durable: false, exclusive: false, autoDelete: false, arguments: null);
             await channel.QueueDeclareAsync("create_order_compensate", durable: false, exclusive: false, autoDelete: false, arguments: null);
+
+            await channel.QueueDeclareAsync("notification_queue", durable: false, exclusive: false, autoDelete: false, arguments: null);
 
             services.AddSingleton(amqpConnection);
             services.AddSingleton<IMsgBroker, RabbitMsgBroker>();

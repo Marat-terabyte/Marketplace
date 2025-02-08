@@ -1,0 +1,7 @@
+﻿{
+  "Jwt": {
+    "Issuer": "https://localhost",
+    "Audience": null,
+    "Key": "!MyS3cr3tK#y$2025!MyS3cr3tK#y$2025!MyS3cr3tK#y$2025"
+  }
+}
