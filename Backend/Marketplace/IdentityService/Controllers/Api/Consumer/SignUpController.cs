@@ -32,7 +32,7 @@ namespace IdentityService.Controllers.Api.Consumer
             ApplicationUser user = new ApplicationUser()
             {
                 Email = input.Email,
-                UserName = $"{input.Surname} {input.Name} {input.Patronymic}".Trim(),
+                UserName = $"{input.Surname} {input.Name}".Trim(),
             };
 
             var result = await _userManager.CreateAsync(user, input.Password!);

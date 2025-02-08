@@ -15,9 +15,6 @@ namespace IdentityService.Models.InputModels
         [Required(ErrorMessage = "NameRequired")]
         public string Name { get; set; }
 
-        [Required(ErrorMessage = "PatronymicRequired")]
-        public string Patronymic { get; set; }
-
         [Required(ErrorMessage = "PasswordRequired")]
         [DataType(DataType.Password)]
         public string Password { get; set; }
