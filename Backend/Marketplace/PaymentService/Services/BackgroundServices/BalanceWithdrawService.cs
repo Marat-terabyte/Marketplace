@@ -20,7 +20,7 @@ namespace PaymentService.Services.BackgroundServices
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
-            await _msgBroker.ReceiveMessageAsync(Consume, "decrease_balance_queue", true);
+            await _msgBroker.ReceiveMessageAsync(Consume, "decrease_balance_queue", false);
         }
 
         public async Task Consume(object ch, BasicDeliverEventArgs events)
@@ -34,19 +34,31 @@ namespace PaymentService.Services.BackgroundServices
             if (transactionModel == null)
                 return;
 
-            var result = await balanceRepository.ProcessPaymentAsync(transactionModel);
-
-            bool isSuccess = result.Item1;
-            if (!isSuccess)
+            try
             {
-                CompensBuyTrans compensation = new(transactionModel);
-                compensation.ErrorMessage = result.Item2!;
+                var result = await balanceRepository.ProcessPaymentAsync(transactionModel);
 
-                await _msgBroker.SendMessageAsync("", "decrease_balance_compensate", JsonSerializer.Serialize(compensation));
-                return;
+                bool isSuccess = result.Item1;
+                if (!isSuccess)
+                {
+                    await Compensate(transactionModel, errorMessage: result.Item2!);
+                    return;
+                }
+
+                await _msgBroker.SendMessageAsync("", "decrease_count_queue", json);
             }
+            catch
+            {
+                await Compensate(transactionModel, errorMessage: "PaymentServiceError");
+            }
+        }
 
-            await _msgBroker.SendMessageAsync("", "decrease_count_queue", json);
+        private async Task Compensate(BuyTransactionModel transactionModel, string errorMessage)
+        {
+            CompensBuyTrans compensation = new(transactionModel);
+            compensation.ErrorMessage = errorMessage!;
+            
+            await _msgBroker.SendMessageAsync("", "decrease_balance_compensate", JsonSerializer.Serialize(compensation));
         }
 
         public Task StopAsync(CancellationToken cancellationToken)

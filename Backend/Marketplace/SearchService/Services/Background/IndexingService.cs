@@ -26,6 +26,8 @@ namespace SearchService.Services.Background
 
         public async Task Consume(object ch, BasicDeliverEventArgs events)
         {
+            IChannel channel = ((AsyncEventingBasicConsumer)ch).Channel;
+
             string json = Encoding.UTF8.GetString(events.Body.ToArray());
             var request = JsonSerializer.Deserialize<SearchIndexRequest>(json);
             if (request == null)
@@ -57,6 +59,8 @@ namespace SearchService.Services.Background
 
                 await _searchRepository.UpdateProductAsync(request.Id, product);
             }
+
+            await channel.BasicAckAsync(events.DeliveryTag, false);
         }
 
         public Task StopAsync(CancellationToken cancellationToken)

@@ -27,10 +27,13 @@ namespace ProductService.Services.BackgroundServices
 
         public async Task Consume(object ch, BasicDeliverEventArgs events)
         {
+            IChannel channel = ((AsyncEventingBasicConsumer) ch).Channel;
+
             using var scope = _serviceProvider.CreateScope();
             ProductStockService stockService = _serviceProvider.GetRequiredService<ProductStockService>();
 
             string json = Encoding.UTF8.GetString(events.Body.ToArray());
+            
             CompensBuyTrans? compensation = JsonSerializer.Deserialize<CompensBuyTrans>(json);
             if (compensation == null)
                 return;
@@ -39,7 +42,7 @@ namespace ProductService.Services.BackgroundServices
             if (res)
             {
                 await _msgBroker.SendMessageAsync("", "decrease_balance_compensate", json);
-                await ((IChannel)ch).BasicAckAsync(events.DeliveryTag, false);
+                await channel.BasicAckAsync(events.DeliveryTag, false);
             }
         }
 

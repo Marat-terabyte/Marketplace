@@ -23,7 +23,7 @@ namespace CartService.Services.BackgroundService
 
         public async Task Consume(object ch, BasicDeliverEventArgs events)
         {
-            IChannel channel = ((AsyncEventingBasicConsumer)ch).Channel;
+            IChannel channel = ((AsyncEventingBasicConsumer) ch).Channel;
 
             string json = Encoding.UTF8.GetString(events.Body.ToArray());
             

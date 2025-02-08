@@ -74,7 +74,7 @@ namespace PaymentService.Models.Repositories
             catch
             {
                 if (errorMessage != null)
-                    errorMessage = "ServerSideError";
+                    errorMessage = "PaymentServiceError";
 
                 return (false, errorMessage);
             }

@@ -5,6 +5,7 @@ using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using System.Text;
 using System.Text.Json;
+using System.Threading.Channels;
 
 namespace PaymentService.Services.BackgroundServices
 {
@@ -26,10 +27,13 @@ namespace PaymentService.Services.BackgroundServices
 
         public async Task Consume(object ch, BasicDeliverEventArgs events)
         {
+            IChannel channel = ((AsyncEventingBasicConsumer)ch).Channel;
+
             using var scope = _serviceProvider.CreateScope();
             IBalanceRepository balanceRepository = scope.ServiceProvider.GetRequiredService<IBalanceRepository>();
 
             string json = Encoding.UTF8.GetString(events.Body.ToArray());
+            
             CompensBuyTrans? compensation = JsonSerializer.Deserialize<CompensBuyTrans>(json);
             if (compensation == null)
                 return;
@@ -38,7 +42,7 @@ namespace PaymentService.Services.BackgroundServices
             if (isSuccess)
             {
                 await _msgBroker.SendMessageAsync("", "decrease_balance_compensate", json);
-                await ((AsyncEventingBasicConsumer)ch).Channel.BasicAckAsync(events.DeliveryTag, false);
+                await channel.BasicAckAsync(events.DeliveryTag, false);
             }
         }
 

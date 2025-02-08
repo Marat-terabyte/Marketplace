@@ -27,14 +27,17 @@ namespace OrderService.Services.BackgroundServices
 
         public async Task Consume(object ch, BasicDeliverEventArgs events)
         {
+            IChannel channel = ((AsyncEventingBasicConsumer) ch).Channel;
+
             using var scope = _serviceProvider.CreateScope();
             OrderManager orderManager = scope.ServiceProvider.GetRequiredService<OrderManager>();
 
             string json = Encoding.UTF8.GetString(events.Body.ToArray());
+            
             BuyTransactionModel? buyTransaction = JsonSerializer.Deserialize<BuyTransactionModel>(json);
             if (buyTransaction == null)
             {
-                await ((IChannel) ch).BasicAckAsync(events.DeliveryTag, false);
+                await channel.BasicAckAsync(events.DeliveryTag, false);
                 
                 return;
             }
@@ -42,7 +45,7 @@ namespace OrderService.Services.BackgroundServices
             try
             {
                 await CreateOrdersAsync(buyTransaction, orderManager);
-                await ((IChannel) ch).BasicAckAsync(events.DeliveryTag, false);
+                await channel.BasicAckAsync(events.DeliveryTag, false);
             }
             catch
             {
