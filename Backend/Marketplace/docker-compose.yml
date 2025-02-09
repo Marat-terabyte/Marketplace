@@ -10,5 +10,50 @@ services:
         - "7001:7001"
     volumes:
         - identity_volume:/identity.sqlite
+  
+  paymentservice:
+    image: ${DOCKER_REGISTRY-}paymentservice
+    build:
+      context: .
+      dockerfile: PaymentService/Dockerfile
+    depends_on:
+        - rabbitmq
+    environment:
+        - ASPNETCORE_URLS=http://*:7002
+        - ConnectionStrings__RabbitMQ=rabbitmq
+    ports:
+        - "7002:7002"
+    volumes:
+        - payment_volume:/PaymentService.sqlite
+    networks:
+        - msg_broker_network
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"  
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - msg_broker_network
+    healthcheck:
+        test: ["CMD", "curl", "-f", "localhost:5672/"]
+        interval: 30s
+        retries: 3
+        start_period: 10s
+        timeout: 10s
+
 volumes:
   identity_volume:
+  payment_volume:
+  rabbitmq_data:
+networks:
+    msg_broker_network:
+        driver: bridge
+  
+
