@@ -1,7 +1,12 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Marketplace.Shared.Models;
+using Marketplace.Shared.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using MongoDB.Driver.Core.Servers;
+using OrderService.Models.Orders;
 using OrderService.Models.Orders.Repositories;
 using System.Security.Claims;
+using System.Text.Json;
 
 namespace OrderService.Controllers.Api.Order
 {
@@ -9,10 +14,12 @@ namespace OrderService.Controllers.Api.Order
     [Route("/api/order")]
     public class OrderController : Controller
     {
-        private IOrderRepository _orderRepository;
+        private readonly IOrderRepository _orderRepository;
+        private readonly IMsgBroker _msgBroker;
 
-        public OrderController(IOrderRepository orderRepository)
+        public OrderController(IOrderRepository orderRepository, IMsgBroker msgBroker)
         {
+            _msgBroker = msgBroker;
             _orderRepository = orderRepository;
         }
 
@@ -64,10 +71,27 @@ namespace OrderService.Controllers.Api.Order
 
             bool isSucces = await _orderRepository.UpdateDeliveryStatus(id, orderId, isDelivered);
             if (isSucces)
+            {
+                // Send notification to a consumer
+                if (isDelivered)
+                {
+                    Models.Orders.Order? order = await _orderRepository.GetOrderAsync(orderId);
+                    await _msgBroker.SendMessageAsync("", "notification_queue", JsonSerializer.Serialize<Notification>(CreateNotification(order!.ConsumerId, orderId)));
+                }
                 return Ok();
-
+            }
             return BadRequest();
         }
 
+        private Notification CreateNotification(string consumerId, string productId)
+        {
+            Notification notification = new Notification()
+            {
+                UserId = consumerId,
+                Message = $"Delivered {productId}"
+            };
+
+            return notification;
+        }
     }
 }

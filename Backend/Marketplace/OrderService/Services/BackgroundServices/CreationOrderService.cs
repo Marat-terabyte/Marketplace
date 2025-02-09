@@ -1,7 +1,6 @@
 ﻿using Marketplace.Shared.Models;
 using Marketplace.Shared.Services;
 using OrderService.Models.Orders;
-using OrderService.Models.Orders.Repositories;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using System.Text;
@@ -46,6 +45,7 @@ namespace OrderService.Services.BackgroundServices
             {
                 await CreateOrdersAsync(buyTransaction, orderManager);
                 await channel.BasicAckAsync(events.DeliveryTag, false);
+                await SendNotificationAsync(buyTransaction);
             }
             catch
             {
@@ -69,6 +69,17 @@ namespace OrderService.Services.BackgroundServices
 
                 await orderManager.AddOrderAsync(order);
             }
+        }
+
+        private async Task SendNotificationAsync(BuyTransactionModel buyTransaction)
+        {
+            Notification notification = new Notification()
+            {
+                UserId = buyTransaction.ConsumerIds[0],
+                Message = "OrderCreated"
+            };
+
+            await _msgBroker.SendMessageAsync("", "notification_queue", JsonSerializer.Serialize<Notification>(notification));
         }
 
         public Task StopAsync(CancellationToken cancellationToken)
