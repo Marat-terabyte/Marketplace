@@ -27,6 +27,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CartService", "CartService\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NotifictationService", "NotifictationService\NotifictationService.csproj", "{ADA0B7CE-4A6A-4FF0-AFC2-E84741899CED}"
 EndProject
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{E3A86A81-FA7C-4B52-A22A-B9956F70BA06}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -73,6 +75,10 @@ Global
 		{ADA0B7CE-4A6A-4FF0-AFC2-E84741899CED}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ADA0B7CE-4A6A-4FF0-AFC2-E84741899CED}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ADA0B7CE-4A6A-4FF0-AFC2-E84741899CED}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E3A86A81-FA7C-4B52-A22A-B9956F70BA06}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E3A86A81-FA7C-4B52-A22A-B9956F70BA06}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E3A86A81-FA7C-4B52-A22A-B9956F70BA06}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E3A86A81-FA7C-4B52-A22A-B9956F70BA06}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

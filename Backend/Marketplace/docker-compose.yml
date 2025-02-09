@@ -1,0 +1,14 @@
+services:
+  identityservice:
+    image: ${DOCKER_REGISTRY-}identityservice
+    build:
+      context: .
+      dockerfile: IdentityService/Dockerfile
+    environment:
+        - ASPNETCORE_URLS=http://*:7001
+    ports:
+        - "7001:7001"
+    volumes:
+        - identity_volume:/identity.sqlite
+volumes:
+  identity_volume:
