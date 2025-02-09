@@ -26,7 +26,22 @@ services:
     volumes:
         - payment_volume:/PaymentService.sqlite
     networks:
-        - msg_broker_network
+        - common_network
+
+  notifictationservice:
+    image: ${DOCKER_REGISTRY-}notifictationservice
+    build:
+      context: .
+      dockerfile: NotifictationService/Dockerfile
+    ports:
+        - "7003:7003"
+    depends_on:
+        - rabbitmq
+    environment:
+        - ASPNETCORE_URLS=http://*:7003
+        - ConnectionStrings__RabbitMQ=rabbitmq
+    networks:
+        - common_network
 
   rabbitmq:
     image: rabbitmq:3-management
@@ -40,9 +55,9 @@ services:
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
     networks:
-      - msg_broker_network
+      - common_network
     healthcheck:
-        test: ["CMD", "curl", "-f", "localhost:5672/"]
+        test: ["CMD", "curl", "-f", "localhost:15672/"]
         interval: 30s
         retries: 3
         start_period: 10s
@@ -53,7 +68,5 @@ volumes:
   payment_volume:
   rabbitmq_data:
 networks:
-    msg_broker_network:
+    common_network:
         driver: bridge
-  
-
