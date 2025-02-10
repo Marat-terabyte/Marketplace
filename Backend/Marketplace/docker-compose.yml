@@ -103,6 +103,26 @@ services:
     networks:
         - common_network
 
+  orderservice:
+    image: ${DOCKER_REGISTRY-}orderservice
+    build:
+      context: .
+      dockerfile: OrderService/Dockerfile
+    ports:
+        - "7007:7007"
+        - "8007:8007"
+    depends_on:
+        - rabbitmq
+        - mongo
+    environment:
+        - ASPNETCORE_URLS=http://*:7007
+        - ConnectionStrings__MongoDB=mongodb://mongodb:27017
+        - ConnectionStrings__RabbitMQ=rabbitmq
+        - ASPNETCORE_HTTP_PORTS=7007
+        - ASPNETCORE_HTTPS_PORTS=8007
+    networks:
+        - common_network
+
   elastic:
     image: elasticsearch:7.17.22
     container_name: elasticsearch
@@ -161,4 +181,5 @@ volumes:
 networks:
     common_network:
         driver: bridge
+
 
