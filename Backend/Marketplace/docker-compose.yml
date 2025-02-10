@@ -43,6 +43,46 @@ services:
     networks:
         - common_network
 
+  productservice:
+    image: ${DOCKER_REGISTRY-}productservice
+    build:
+      context: .
+      dockerfile: ProductService/Dockerfile
+    depends_on:
+        - rabbitmq
+        - redis
+        - mongo
+    ports:
+        - "7004:7004"
+    environment:
+        - ASPNETCORE_URLS=http://*:7004
+        - ConnectionStrings__MongoDB=mongodb://mongodb:27017
+        - ConnectionStrings__Redis=redis
+        - ConnectionStrings__RabbitMQ=rabbitmq
+    networks:
+        - common_network
+  
+  redis:
+    image: redis:latest
+    container_name: dbredis
+    ports:
+      - "6380:6379"
+    volumes:
+      - ./redisdata:/data
+    networks:
+        - common_network
+  
+  mongo:
+    image: mongo:latest
+    container_name: mongodb
+    ports:
+        - "27017:27107"
+    volumes:
+      - mongo-data:/data/db
+      - mongo-config:/data/configdb
+    networks:
+        - common_network
+
   rabbitmq:
     image: rabbitmq:3-management
     container_name: rabbitmq
@@ -67,6 +107,10 @@ volumes:
   identity_volume:
   payment_volume:
   rabbitmq_data:
+  mongo-data:
+  mongo-config:
+
 networks:
     common_network:
         driver: bridge
+
