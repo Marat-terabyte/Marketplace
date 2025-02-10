@@ -7,7 +7,8 @@
         "identityservice": "StartDebugging",
         "paymentservice": "StartDebugging",
         "notifictationservice": "StartDebugging",
-        "searchservice": "StartDebugging"
+        "searchservice": "StartDebugging",
+        "cartservice": "StartDebugging"
       }
     }
   }

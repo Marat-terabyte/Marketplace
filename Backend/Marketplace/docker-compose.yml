@@ -69,6 +69,7 @@ services:
       dockerfile: SearchService/Dockerfile
     depends_on:
         - elastic
+        - rabbitmq
     ports:
         - "7005:7005"
         - "8005:8005"
@@ -78,6 +79,27 @@ services:
         - ConnectionStrings__RabbitMQ=rabbitmq
         - ASPNETCORE_HTTP_PORTS=7005
         - ASPNETCORE_HTTPS_PORTS=8005
+    networks:
+        - common_network
+
+  cartservice:
+    image: ${DOCKER_REGISTRY-}cartservice
+    build:
+      context: .
+      dockerfile: CartService/Dockerfile
+    ports:
+        - "7006:7006"
+        - "8006:8006"
+    depends_on:
+        - rabbitmq
+        - mongo
+    environment:
+        - ASPNETCORE_URLS=http://*:7006
+        - ConnectionStrings__MongoDB=mongodb://mongodb:27017
+        - ConnectionStrings__RabbitMQ=rabbitmq
+        - Services__ProductService=http://productservice:7004
+        - ASPNETCORE_HTTP_PORTS=7006
+        - ASPNETCORE_HTTPS_PORTS=8006
     networks:
         - common_network
 
@@ -139,3 +161,4 @@ volumes:
 networks:
     common_network:
         driver: bridge
+
