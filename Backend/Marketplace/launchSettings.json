@@ -6,7 +6,8 @@
       "serviceActions": {
         "identityservice": "StartDebugging",
         "paymentservice": "StartDebugging",
-        "notifictationservice": "StartDebugging"
+        "notifictationservice": "StartDebugging",
+        "searchservice": "StartDebugging"
       }
     }
   }
