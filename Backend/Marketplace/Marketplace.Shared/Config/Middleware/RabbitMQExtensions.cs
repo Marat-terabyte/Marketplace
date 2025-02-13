@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using RabbitMQ.Client;
+using RabbitMQ.Client.Exceptions;
 
 namespace Marketplace.Shared.Config.Middleware
 {
@@ -10,12 +11,23 @@ namespace Marketplace.Shared.Config.Middleware
     {
         public static async Task AddRabbitMQ(this IServiceCollection services, ConfigurationManager config)
         {
-            IConnection amqpConnection = await new ConnectionFactory()
+            IConnection? amqpConnection = null;
+            while (amqpConnection == null)
             {
-                HostName = config.GetConnectionString("RabbitMQ") ?? throw new ArgumentNullException("'RabbitMQ' connection string is empty"),
-                UserName = config["RabbitMQ:Username"] ?? throw new ArgumentNullException("'RabbitMQ:Username' string is empty"),
-                Password = config["RabbitMQ:Password"] ?? throw new ArgumentNullException("'RabbitMQ:Password' string is empty")
-            }.CreateConnectionAsync();
+                try
+                {
+                    amqpConnection = await new ConnectionFactory()
+                    {
+                        HostName = config.GetConnectionString("RabbitMQ") ?? throw new ArgumentNullException("'RabbitMQ' connection string is empty"),
+                        UserName = config["RabbitMQ:Username"] ?? throw new ArgumentNullException("'RabbitMQ:Username' string is empty"),
+                        Password = config["RabbitMQ:Password"] ?? throw new ArgumentNullException("'RabbitMQ:Password' string is empty")
+                    }.CreateConnectionAsync();
+                }
+                catch
+                {
+                    await Task.Delay(TimeSpan.FromMinutes(2));
+                }
+            }
 
             // TODO: Replace 
             // Creating queues
