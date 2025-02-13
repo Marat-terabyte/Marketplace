@@ -10,6 +10,8 @@ services:
         - "7001:7001"
     volumes:
         - identity_volume:/identity.sqlite
+    networks:
+        - common_network
   
   paymentservice:
     image: ${DOCKER_REGISTRY-}paymentservice
@@ -170,6 +172,20 @@ services:
     networks:
       - common_network
 
+  apigateway:
+    image: ${DOCKER_REGISTRY-}apigateway
+    container_name: api-gateway
+    build:
+      context: .
+      dockerfile: APIGateway/Dockerfile
+    ports:
+        - "80:80"
+        - "443:443"
+    environment:
+        - ASPNETCORE_URLS=http://*:80
+    networks:
+        - common_network
+
 volumes:
   identity_volume:
   payment_volume:
@@ -181,5 +197,3 @@ volumes:
 networks:
     common_network:
         driver: bridge
-
-
