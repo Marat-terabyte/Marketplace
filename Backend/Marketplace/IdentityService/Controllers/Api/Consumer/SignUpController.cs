@@ -33,6 +33,7 @@ namespace IdentityService.Controllers.Api.Consumer
             {
                 Email = input.Email,
                 UserName = $"{input.Surname} {input.Name}".Trim(),
+                UserType = UserType.User
             };
 
             var result = await _userManager.CreateAsync(user, input.Password!);

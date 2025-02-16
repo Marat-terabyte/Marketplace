@@ -42,9 +42,10 @@ namespace IdentityService.Controllers.Api.Account
             return Json(
                 new
                 {
+                    id = user.Id,
                     token = token,
                     role = roles,
-                    expiration = DateTime.Now.AddHours(5)
+                    expiration = DateTime.Now.AddHours(24)
                 }
             );
         }
