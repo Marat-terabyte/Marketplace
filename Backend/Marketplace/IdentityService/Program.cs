@@ -1,6 +1,7 @@
 using IdentityService.Data;
 using IdentityService.Extensions;
 using IdentityService.Models.Identity;
+using IdentityService.Repositories.AppUserRepositories;
 using IdentityService.Services;
 using Marketplace.Shared.Config.Middleware;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -28,6 +29,7 @@ namespace IdentityService
 
             builder.Services.AddDbContext<ApplicationContext>(opt => opt.UseSqlite(builder.Configuration.GetConnectionString("Sqlite") ??
                 throw new NullReferenceException("SQL connection string is empty")));
+            builder.Services.AddScoped<IAppUserRepository, AppUserRepository>();
 
             builder.Services.AddAspIdentity();
             builder.Services.AddJwt(builder.Configuration);
