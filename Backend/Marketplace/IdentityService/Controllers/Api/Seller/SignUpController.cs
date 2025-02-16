@@ -33,6 +33,7 @@ namespace IdentityService.Controllers.Api.Seller
             {
                 Email = input.Email,
                 UserName = input.Storename!.Trim(),
+                UserType = UserType.Seller
             };
 
             var result = await _userManager.CreateAsync(user, input.Password!);
