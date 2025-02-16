@@ -17,5 +17,11 @@ namespace IdentityService.Repositories.AppUserRepositories
         {
             return await _db.Users.FirstOrDefaultAsync(u => u.Id == id);
         }
+
+        public async Task UpdateUserAsync(ApplicationUser appUser)
+        {
+            _db.Users.Update(appUser);
+            await _db.SaveChangesAsync();
+        }
     }
 }
