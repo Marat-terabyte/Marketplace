@@ -18,15 +18,10 @@ namespace APIGateway
             if (cors.Origins == null || cors.Origins.Length == 0)
                 throw new ArgumentNullException("'CorsConfig:Origins' field in appsettings.json is empty");
 
-            foreach (var s in cors.Origins)
-            {
-                Console.WriteLine(s);
-            }
-
             builder.Services.AddCors(
                 options =>
                 {
-                    options.AddPolicy("DefaultPolixy", p =>
+                    options.AddPolicy("DefaultPolicy", p =>
                     {
                         p.WithOrigins(cors.Origins)
                         .AllowAnyMethod()
@@ -40,7 +35,7 @@ namespace APIGateway
 
             var app = builder.Build();
 
-            app.UseCors();
+            app.UseCors("DefaultPolicy");
 
             await app.UseOcelot();
 
