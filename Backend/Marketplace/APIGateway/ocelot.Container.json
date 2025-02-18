@@ -1,0 +1,134 @@
+﻿{
+  "Routes": [
+    // Identity Service
+    {
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
+      "UpstreamPathTemplate": "/api/consumer/{everything}",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "identityservice",
+          "Port": 7001
+        }
+      ],
+      "DownstreamPathTemplate": "/api/consumer/{everything}",
+      "DownstreamScheme": "http"
+    },
+    {
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
+      "UpstreamPathTemplate": "/api/seller/{everything}",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "identityservice",
+          "Port": 7001
+        }
+      ],
+      "DownstreamPathTemplate": "/api/seller/{everything}",
+      "DownstreamScheme": "http"
+    },
+    {
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
+      "UpstreamPathTemplate": "/api/account/{everything}",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "identityservice",
+          "Port": 7001
+        }
+      ],
+      "DownstreamPathTemplate": "/api/account/{everything}",
+      "DownstreamScheme": "http"
+    },
+
+    // Product Service
+    {
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
+      "UpstreamPathTemplate": "/api/products/{everything}",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "productservice",
+          "Port": 7004
+        }
+      ],
+      "DownstreamScheme": "http",
+      "DownstreamPathTemplate": "/api/products/{everything}"
+
+      /*
+      "AddQueriesToRequest": {
+        "id": "{query.id}"
+      }
+      */
+    },
+
+    // Payment Service
+    {
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
+      "UpstreamPathTemplate": "/api/balance/{everything}",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "paymentservice",
+          "Port": 7002
+        }
+      ],
+      "DownstreamScheme": "http",
+      "DownstreamPathTemplate": "/api/balance/{everything}"
+    },
+
+    // Cart Service
+    {
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
+      "UpstreamPathTemplate": "/api/cart/{everything}",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "cartservice",
+          "Port": 7006
+        }
+      ],
+      "DownstreamScheme": "http",
+      "DownstreamPathTemplate": "/api/cart/{everything}"
+    },
+
+    // Order Service
+    {
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
+      "UpstreamPathTemplate": "/api/order/{everything}",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "orderservice",
+          "Port": 7007
+        }
+      ],
+      "DownstreamScheme": "http",
+      "DownstreamPathTemplate": "/api/order/{everything}"
+    },
+
+    // Notification Service
+    {
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "OPTIONS" ],
+      "UpstreamPathTemplate": "/notification/{catchAll}",
+      "DownstreamPathTemplate": "/hub/notification/{catchAll}",
+      "DownstreamScheme": "ws",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "notifictationservice",
+          "Port": 7003
+        }
+      ]
+    },
+
+    // Search Service
+    {
+      "UpstreamHttpMethod": [ "GET" ],
+      "UpstreamPathTemplate": "/api/search",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "searchservice",
+          "Port": 7005
+        }
+      ],
+      "DownstreamScheme": "http",
+      "DownstreamPathTemplate": "/api/search"
+    }
+  ],
+  "GlobalConfiguration": {
+    "BaseUrl": "http://localhost"
+  }
+}
