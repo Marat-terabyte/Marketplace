@@ -33,6 +33,24 @@ namespace APIGateway
 
             app.UseCors("DefaultPolicy");
 
+            app.Use((async (context, next) =>
+            {
+                if (context.Request.Method == HttpMethod.Options.Method)
+                {
+                    context.Response.Headers.Append("Access-Control-Allow-Origin", "*");
+                    context.Response.Headers.Append("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+                    context.Response.Headers.Append("Access-Control-Allow-Headers", "Content-Type, Authorization");
+                    context.Response.Headers.Append("Access-Control-Max-Age", "86400");
+
+                    context.Response.StatusCode = 200;
+                    await context.Response.CompleteAsync();
+                }
+                else
+                {
+                    await next.Invoke();
+                }
+            }));
+
             await app.UseOcelot();
 
             app.Run();
