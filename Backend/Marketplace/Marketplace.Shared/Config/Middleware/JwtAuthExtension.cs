@@ -33,12 +33,20 @@ namespace Marketplace.Shared.Config.Middleware
                     },
                     OnMessageReceived = context =>
                     {
-                        var accessToken = context.Request.Query["access_token"];
+                        if (context.Request.Cookies.ContainsKey("jwt"))
+                        {
+                            context.Token = context.Request.Cookies["jwt"];
+
+                            return Task.CompletedTask;
+                        }
+
                         var path = context.HttpContext.Request.Path;
+                        var accessToken = context.Request.Query["access_token"];
                         if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/hub"))
                         {
                             context.Token = accessToken;
                         }
+                        
                         return Task.CompletedTask;
                     },
                 };

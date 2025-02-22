@@ -21,7 +21,8 @@ namespace APIGateway
                     {
                         p.WithOrigins(cors.Origins!)
                         .AllowAnyMethod()
-                        .AllowAnyHeader();
+                        .AllowAnyHeader()
+                        .AllowCredentials();
                     });
                 }
             );

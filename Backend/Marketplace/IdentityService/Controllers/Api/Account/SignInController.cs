@@ -39,13 +39,24 @@ namespace IdentityService.Controllers.Api.Account
 
             var token = _tokenService.Generate(user, roles);
 
+            DateTime expirationTime = DateTime.Now.AddHours(24);
+
+            CookieOptions cookie = new CookieOptions{
+                HttpOnly = true,
+                SameSite = SameSiteMode.None,
+                Secure = true,
+                Expires = expirationTime
+            };
+
+            Response.Cookies.Append("jwt", token, cookie);
+
             return Json(
                 new
                 {
                     id = user.Id,
                     token = token,
                     role = roles,
-                    expiration = DateTime.Now.AddHours(24)
+                    expiration = expirationTime
                 }
             );
         }
