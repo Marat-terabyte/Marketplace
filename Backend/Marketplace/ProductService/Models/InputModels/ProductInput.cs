@@ -25,6 +25,6 @@ namespace ProductService.Models.InputModels
         [Required(ErrorMessage = "ProductImagesRequired")]
         public string[] Images { get; set; }
 
-        public Dictionary<string, object>? Attributes { get; set; }
+        public Dictionary<string, string>? Attributes { get; set; }
     }
 }

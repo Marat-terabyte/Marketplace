@@ -21,6 +21,6 @@ namespace ProductService.Models.Products
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt {  get; set; }
         public string[] Images { get; set; }
-        public Dictionary<string, object>? Attributes { get; set; }
+        public Dictionary<string, string>? Attributes { get; set; }
     }
 }
