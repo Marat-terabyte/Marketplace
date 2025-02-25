@@ -36,6 +36,14 @@ namespace ProductService.Models.Products.Repositories
                 .ToListAsync();
         }
 
+        public async Task<List<Product>> GetProducts(int from, int to)
+        {
+            return await _collection.Find(Builders<Product>.Filter.Empty)
+                .Skip(from)
+                .Limit(to)
+                .ToListAsync();
+        }
+
         public async Task UpdateAsync(Product updatedProduct)
         {
             await _collection.ReplaceOneAsync(p => p.Id == updatedProduct.Id, updatedProduct);

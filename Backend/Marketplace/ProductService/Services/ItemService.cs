@@ -67,6 +67,13 @@ namespace ProductService.Services
             return product;
         }
 
+        public async Task<List<Product>> GetAllProductsAsync(int from, int to)
+        {
+            List<Product> products = await _repository.GetProducts(from, to);
+
+            return products;
+        }
+
         public async Task<List<Product>> GetBySellerIdAsync(string sellerId, int from, int to)
         {
             return await _repository.GetBySellerIdAsync(sellerId, from, to);

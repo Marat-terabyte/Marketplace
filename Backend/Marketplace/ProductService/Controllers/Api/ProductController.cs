@@ -1,13 +1,10 @@
 ﻿using Marketplace.Shared.Formatters;
-using Marketplace.Shared.Models;
-using Marketplace.Shared.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ProductService.Models.InputModels;
 using ProductService.Models.Products;
 using ProductService.Services;
 using System.Security.Claims;
-using System.Text.Json;
 
 namespace ProductService.Controllers.Api
 {
@@ -38,6 +35,18 @@ namespace ProductService.Controllers.Api
         public async Task<IActionResult> GetBySellerId(string sellerId, int from, int to)
         {
             List<Product> products = await _productService.GetBySellerIdAsync(sellerId, from, to);
+            if (products.Count == 0)
+                return NotFound();
+
+            return Ok(products);
+        }
+
+        [Route("all")]
+        [HttpGet]
+        public async Task<IActionResult> GetAllProducts(int from, int to)
+        {
+            List<Product> products = await _productService.GetAllProductsAsync(from, to);
+
             if (products.Count == 0)
                 return NotFound();
 
