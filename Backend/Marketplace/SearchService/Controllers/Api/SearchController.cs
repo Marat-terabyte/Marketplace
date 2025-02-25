@@ -23,10 +23,7 @@ namespace SearchService.Controllers.Api
             if (products == null || products.Count == 0)
                     return NotFound();
 
-            if (to >=  products.Count)
-                return Ok(products[from..products.Count]);
-
-            return Ok(products[from..to]);
+            return Ok(products);
         }
     }
 }
