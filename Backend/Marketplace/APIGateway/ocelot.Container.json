@@ -58,6 +58,22 @@
       */
     },
 
+    {
+      "UpstreamPathTemplate": "/api/feed",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "productservice",
+          "Port": 7004
+        }
+      ],
+      "DownstreamScheme": "http",
+      "DownstreamPathTemplate": "/api/products/all",
+      "AddQueriesToRequest": {
+        "from": "{from}",
+        "to": "{to}"
+      }
+    },
+
     // Payment Service
     {
       "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
