@@ -11,9 +11,9 @@ namespace SearchService.Services
             _search = search;
         }
 
-        public async Task<List<SearchedProduct>?> SearchProducts(string query)
+        public async Task<List<SearchedProduct>?> SearchProducts(string query, int from, int to)
         {
-            return await _search.GetPoductsAsync(query);
+            return await _search.GetPoductsAsync(query, from, to);
         }
     }
 }

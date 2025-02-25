@@ -67,9 +67,9 @@ namespace ProductService.Services
             return product;
         }
 
-        public async Task<List<Product>> GetBySellerIdAsync(string sellerId)
+        public async Task<List<Product>> GetBySellerIdAsync(string sellerId, int from, int to)
         {
-            return await _repository.GetBySellerIdAsync(sellerId);
+            return await _repository.GetBySellerIdAsync(sellerId, from, to);
         }
 
         public async Task UpdateAsync(Product updatedProduct)

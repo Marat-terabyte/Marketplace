@@ -12,6 +12,7 @@ namespace SearchServiceTests.Services.Background
 {
     public class IndexingServiceTests
     {
+        private readonly AsyncEventingBasicConsumer _asyncEventingBasicConsumer;
         private readonly Mock<ISearchRepository> _searchRepository;
         private readonly Mock<IMsgBroker> _mockBroker;
         private readonly IndexingService _indexingService;
@@ -21,11 +22,12 @@ namespace SearchServiceTests.Services.Background
             _searchRepository = new Mock<ISearchRepository>();
             _mockBroker = new Mock<IMsgBroker>();
             _indexingService = new IndexingService(_searchRepository.Object, _mockBroker.Object);
+            _asyncEventingBasicConsumer = new AsyncEventingBasicConsumer(new Mock<IChannel>().Object);
         }
 
         [Fact]
         public async Task Consume_AddProduct_ShouldCallAddProduct()
-        {
+        {            
             // Arrange
             var request = new SearchIndexRequest()
             {
@@ -42,7 +44,7 @@ namespace SearchServiceTests.Services.Background
             var args = new BasicDeliverEventArgs("", 0, false, "", "", null, encodedJson);
 
             // Act
-            await _indexingService.Consume(null, args);
+            await _indexingService.Consume(_asyncEventingBasicConsumer, args);
 
             // Assert
             _searchRepository.Verify(x => x.AddProductAsync(It.IsAny<SearchedProduct>()), Times.Once);
@@ -67,7 +69,7 @@ namespace SearchServiceTests.Services.Background
             var args = new BasicDeliverEventArgs("", 0, false, "", "", null, encodedJson);
 
             // Act
-            await _indexingService.Consume(null, args);
+            await _indexingService.Consume(_asyncEventingBasicConsumer, args);
 
             // Assert
             _searchRepository.Verify(x => x.UpdateProductAsync(request.Id, It.IsAny<SearchedProduct>()), Times.Once);
@@ -92,7 +94,7 @@ namespace SearchServiceTests.Services.Background
             var args = new BasicDeliverEventArgs("", 0, false, "", "", null, encodedJson);
 
             // Act
-            await _indexingService.Consume(null, args);
+            await _indexingService.Consume(_asyncEventingBasicConsumer, args);
 
             // Assert
             _searchRepository.Verify(x => x.DeleteProductAsync(request.Id), Times.Once);

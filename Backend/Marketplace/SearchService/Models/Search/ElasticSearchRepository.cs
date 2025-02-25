@@ -30,7 +30,7 @@ namespace SearchService.Models.Search
             return response.IsSuccess();
         }
 
-        public async Task<List<SearchedProduct>?> GetPoductsAsync(string query)
+        public async Task<List<SearchedProduct>?> GetPoductsAsync(string query, int from, int to)
         {
             var response = await _elastic.SearchAsync<SearchedProduct>(s =>
                 s.Query(q =>
@@ -45,6 +45,8 @@ namespace SearchService.Models.Search
                         )
                     )
                 )
+                .From(from)
+                .Size(to)
             );
 
             if (response == null || !response.IsValidResponse)

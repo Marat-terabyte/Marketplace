@@ -37,11 +37,11 @@ namespace ProductService.Controllers.Api
         [HttpGet]
         public async Task<IActionResult> GetBySellerId(string sellerId, int from, int to)
         {
-            List<Product> products = await _productService.GetBySellerIdAsync(sellerId);
+            List<Product> products = await _productService.GetBySellerIdAsync(sellerId, from, to);
             if (products.Count == 0)
                 return NotFound();
 
-            return Ok(products[from..to]);
+            return Ok(products);
         }
 
         [Authorize(Roles = "seller")]

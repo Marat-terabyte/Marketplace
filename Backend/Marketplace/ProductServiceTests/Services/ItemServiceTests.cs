@@ -95,15 +95,15 @@ namespace ProductServiceTests.Services
                 Images = ["https://url"],
             };
 
-            _mockRepository.Setup(r => r.GetBySellerIdAsync("1")).ReturnsAsync([product]);
+            _mockRepository.Setup(r => r.GetBySellerIdAsync("1", 1, 10)).ReturnsAsync([product]);
 
             // Act
-            var res = await _itemService.GetBySellerIdAsync(product.SellerId);
+            var res = await _itemService.GetBySellerIdAsync(product.SellerId, 1, 10);
 
             //Assert
             Assert.NotNull(res);
             Assert.Equal(product, product);
-            _mockRepository.Verify(r => r.GetBySellerIdAsync("1"), Times.Once());
+            _mockRepository.Verify(r => r.GetBySellerIdAsync("1", 1, 10), Times.Once());
         }
         
         [Fact]
