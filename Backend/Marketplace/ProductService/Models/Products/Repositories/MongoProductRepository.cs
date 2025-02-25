@@ -32,7 +32,15 @@ namespace ProductService.Models.Products.Repositories
         {
             return await _collection.Find(p => p.SellerId == sellerId)
                 .Skip(from)
-                .Limit(to)
+                .Limit(to - from)
+                .ToListAsync();
+        }
+
+        public async Task<List<Product>> GetProducts(int from, int to)
+        {
+            return await _collection.Find(Builders<Product>.Filter.Empty)
+                .Skip(from)
+                .Limit(to - from)
                 .ToListAsync();
         }
 

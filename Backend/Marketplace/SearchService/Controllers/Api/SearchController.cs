@@ -19,6 +19,9 @@ namespace SearchService.Controllers.Api
         [Route("")]
         public async Task<IActionResult> Search(string q, int from, int to)
         {
+            if (to < from)
+                return BadRequest();
+
             List<SearchedProduct>? products = await _findService.SearchProducts(q, from, to);
             if (products == null || products.Count == 0)
                     return NotFound();
