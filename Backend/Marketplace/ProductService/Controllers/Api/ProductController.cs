@@ -34,6 +34,9 @@ namespace ProductService.Controllers.Api
         [HttpGet]
         public async Task<IActionResult> GetBySellerId(string sellerId, int from, int to)
         {
+            if (to < from)
+                return BadRequest();
+
             List<Product> products = await _productService.GetBySellerIdAsync(sellerId, from, to);
             if (products.Count == 0)
                 return NotFound();
@@ -45,6 +48,9 @@ namespace ProductService.Controllers.Api
         [HttpGet]
         public async Task<IActionResult> GetAllProducts(int from, int to)
         {
+            if (to < from)
+                return BadRequest();
+
             List<Product> products = await _productService.GetAllProductsAsync(from, to);
 
             if (products.Count == 0)

@@ -46,7 +46,7 @@ namespace SearchService.Models.Search
                     )
                 )
                 .From(from)
-                .Size(to)
+                .Size(to - from)
             );
 
             if (response == null || !response.IsValidResponse)
