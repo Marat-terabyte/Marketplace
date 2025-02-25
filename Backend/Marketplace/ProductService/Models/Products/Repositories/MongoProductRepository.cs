@@ -1,5 +1,4 @@
-﻿
-using MongoDB.Bson;
+﻿using MongoDB.Bson;
 using MongoDB.Driver;
 
 namespace ProductService.Models.Products.Repositories
@@ -29,9 +28,12 @@ namespace ProductService.Models.Products.Repositories
             return await _collection.Find(p => p.Id == ObjectId.Parse(id)).FirstOrDefaultAsync();
         }
 
-        public async Task<List<Product>> GetBySellerIdAsync(string sellerId)
+        public async Task<List<Product>> GetBySellerIdAsync(string sellerId, int from, int to)
         {
-            return await _collection.Find(p => p.SellerId == sellerId).ToListAsync();
+            return await _collection.Find(p => p.SellerId == sellerId)
+                .Skip(from)
+                .Limit(to)
+                .ToListAsync();
         }
 
         public async Task UpdateAsync(Product updatedProduct)
