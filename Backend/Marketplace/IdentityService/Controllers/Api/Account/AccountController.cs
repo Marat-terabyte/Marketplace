@@ -1,5 +1,7 @@
 ﻿using IdentityService.Models.Identity;
 using IdentityService.Repositories.AppUserRepositories;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace IdentityService.Controllers.Api.Account
@@ -8,10 +10,12 @@ namespace IdentityService.Controllers.Api.Account
     [ApiController]
     public class AccountController : Controller
     {
+        private SignInManager<ApplicationUser> _signInManager;
         private IAppUserRepository _appUserRepository;
 
-        public AccountController(IAppUserRepository appUserRepository)
+        public AccountController(IAppUserRepository appUserRepository, SignInManager<ApplicationUser> signInManager)
         {
+            _signInManager = signInManager;
             _appUserRepository = appUserRepository;
         }
 
@@ -30,6 +34,18 @@ namespace IdentityService.Controllers.Api.Account
                 name = appUser.UserName,
                 description = appUser.Description,
             });
+        }
+
+        [HttpGet]
+        [Route("logout")]
+        [Authorize]
+        public async Task<IActionResult> Logout()
+        {
+            await _signInManager.SignOutAsync();
+
+            Response.Cookies.Delete("jwt");
+
+            return Ok();
         }
     }
 }
