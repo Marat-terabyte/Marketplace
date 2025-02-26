@@ -55,6 +55,7 @@ namespace IdentityService.Controllers.Api.Account
                 {
                     id = user.Id,
                     token = token,
+                    name = user.UserName,
                     role = roles,
                     expiration = expirationTime
                 }
