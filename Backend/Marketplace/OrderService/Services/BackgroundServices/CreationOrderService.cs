@@ -55,19 +55,22 @@ namespace OrderService.Services.BackgroundServices
 
         private async Task CreateOrdersAsync(BuyTransactionModel buyTransaction, OrderManager orderManager)
         {
-            for (int i = 0; i < buyTransaction.ProductIds.Count; i++)
+            for (int i = 0; i < buyTransaction.ProductIds.Count; i++) // Enumerates all products
             {
-                Order order = new Order()
+                for (int j = 0; j < buyTransaction.Counts[i]; j++) // Adds orders of selected product
                 {
-                    ProductId = buyTransaction.ProductIds[i],
-                    ConsumerId = buyTransaction.ConsumerIds[i],
-                    SellerId = buyTransaction.SellerIds[i],
-                    Price = buyTransaction.Prices[i],
-                    DeliveryPlace = buyTransaction.DeliveryPlace,
-                    CreatedAt = DateTime.UtcNow,
-                };
+                    Order order = new Order()
+                    {
+                        ProductId = buyTransaction.ProductIds[i],
+                        ConsumerId = buyTransaction.ConsumerIds[i],
+                        SellerId = buyTransaction.SellerIds[i],
+                        Price = buyTransaction.Prices[i],
+                        DeliveryPlace = buyTransaction.DeliveryPlace,
+                        CreatedAt = DateTime.UtcNow,
+                    };
 
-                await orderManager.AddOrderAsync(order);
+                    await orderManager.AddOrderAsync(order);
+                }
             }
         }
 
