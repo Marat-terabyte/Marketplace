@@ -2,7 +2,7 @@ services:
   identityservice:
     image: ${DOCKER_REGISTRY-}identityservice
     build:
-      context: .
+      context: ./Backend/Marketplace
       dockerfile: IdentityService/Dockerfile
     environment:
         - ASPNETCORE_URLS=http://*:7001
@@ -16,7 +16,7 @@ services:
   paymentservice:
     image: ${DOCKER_REGISTRY-}paymentservice
     build:
-      context: .
+      context: ./Backend/Marketplace
       dockerfile: PaymentService/Dockerfile
     depends_on:
         - rabbitmq
@@ -33,7 +33,7 @@ services:
   notifictationservice:
     image: ${DOCKER_REGISTRY-}notifictationservice
     build:
-      context: .
+      context: ./Backend/Marketplace
       dockerfile: NotifictationService/Dockerfile
     ports:
         - "7003:7003"
@@ -48,7 +48,7 @@ services:
   productservice:
     image: ${DOCKER_REGISTRY-}productservice
     build:
-      context: .
+      context: ./Backend/Marketplace
       dockerfile: ProductService/Dockerfile
     depends_on:
         - rabbitmq
@@ -67,7 +67,7 @@ services:
   searchservice:
     image: ${DOCKER_REGISTRY-}searchservice
     build:
-      context: .
+      context: ./Backend/Marketplace
       dockerfile: SearchService/Dockerfile
     depends_on:
         - elastic
@@ -87,7 +87,7 @@ services:
   cartservice:
     image: ${DOCKER_REGISTRY-}cartservice
     build:
-      context: .
+      context: ./Backend/Marketplace
       dockerfile: CartService/Dockerfile
     ports:
         - "7006:7006"
@@ -108,7 +108,7 @@ services:
   orderservice:
     image: ${DOCKER_REGISTRY-}orderservice
     build:
-      context: .
+      context: ./Backend/Marketplace
       dockerfile: OrderService/Dockerfile
     ports:
         - "7007:7007"
@@ -176,16 +176,30 @@ services:
     image: ${DOCKER_REGISTRY-}apigateway
     container_name: api-gateway
     build:
-      context: .
+      context: ./Backend/Marketplace
       dockerfile: APIGateway/Dockerfile
     ports:
         - "80:80"
-        - "443:443"
     environment:
         - ASPNETCORE_URLS=http://*:80
-        - CorsConfig__Origins__0=http://localhost:5173
+        - CorsConfig__Origins__0=http://frontend:81
     networks:
         - common_network
+
+  frontend:
+    container_name: react-frontend
+    build:
+      context: ./Frontend
+      dockerfile: ./Dockerfile
+    environment:
+        - VITE_BACKEND_HOST=http://apigateway:80
+    ports:
+      - "81:80"
+      - "443:443"
+    depends_on:
+      - apigateway
+    networks:
+      - common_network
 
 volumes:
   identity_volume:
