@@ -3,6 +3,7 @@ import { IProduct } from "../models/ProductI";
 
 import NotFound from "../pages/NotFound";
 import { addProductBasket } from "../api/basketAPI";
+import userStore from "../store/userStore";
 interface ProductItemProps {
   data: IProduct | null;
   id: string;
@@ -70,15 +71,18 @@ const ProductItem: FC<ProductItemProps> = ({ data, id }) => {
             1000 Р
           </h1>
         </div>
-        <div className='mt-5'>
-          <button
-            className='h-fit p-2 w-56 rounded-lg shadow-xl'
-            type='button'
-            onClick={() => addProductBasket(id)}
-          >
-            Добавить в корзину
-          </button>
-        </div>
+
+        {userStore.userRole === "seller" ? null : (
+          <div className='mt-5'>
+            <button
+              className='h-fit p-2 w-56 rounded-lg shadow-xl'
+              type='button'
+              onClick={() => addProductBasket(id)}
+            >
+              Добавить в корзину
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
