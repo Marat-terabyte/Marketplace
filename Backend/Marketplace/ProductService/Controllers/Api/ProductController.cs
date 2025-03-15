@@ -38,8 +38,6 @@ namespace ProductService.Controllers.Api
                 return BadRequest();
 
             List<Product> products = await _productService.GetBySellerIdAsync(sellerId, from, to);
-            if (products.Count == 0)
-                return NotFound();
 
             return Ok(products);
         }
@@ -52,9 +50,6 @@ namespace ProductService.Controllers.Api
                 return BadRequest();
 
             List<Product> products = await _productService.GetAllProductsAsync(from, to);
-
-            if (products.Count == 0)
-                return NotFound();
 
             return Ok(products);
         }
